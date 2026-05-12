@@ -1,7 +1,8 @@
 import axios from 'axios'
 
 const API = axios.create({
-  baseURL: 'http://localhost:5000/api'
+  // baseURL: 'http://localhost:5000/api'
+  baseURL: 'https://jobtracker-backend-n5ht.onrender.com/api'
 })
 
 // Har request mein token automatically add ho
