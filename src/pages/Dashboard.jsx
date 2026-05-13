@@ -33,7 +33,7 @@ function Dashboard() {
   }
 
   const handleLogout = () => {
-    if (!window.confirm('Are you sure you want to delete this job?')) return
+    if (!window.confirm('Are you sure you want to LogOut?')) return
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     toast.success('Logged out successfully!')
