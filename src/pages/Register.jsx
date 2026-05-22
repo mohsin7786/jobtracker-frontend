@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { registerUser } from '../utils/api'
 import toast from 'react-hot-toast'
 
-function Register() {
+function Register({onLogin}) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,6 +19,7 @@ function Register() {
       const res = await registerUser({ name, email, password })
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('user', JSON.stringify(res.data.user))
+      onLogin(res.data.token)
       toast.success('Register Successful!')
       navigate('/dashboard')
     } catch (err) {

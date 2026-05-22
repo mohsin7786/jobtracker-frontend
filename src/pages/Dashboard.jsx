@@ -5,14 +5,17 @@ import toast from 'react-hot-toast'
 import StatsCard from '../components/StatsCard'
 import JobCard from '../components/JobCard'
 import JobModal from '../components/JobModal'
+import ConfirmModal from '../components/ConfirmModal'
 
-function Dashboard() {
+function Dashboard({ onLogout }) {
   const [jobs, setJobs] = useState([])
   const [loading, setLoading] = useState(true)
   const [showModal, setShowModal] = useState(false)
   const [editJob, setEditJob] = useState(null)
   const [filterStatus, setFilterStatus] = useState('All')
   const [searchQuery, setSearchQuery] = useState('')
+  const [deleteId, setDeleteId] = useState(null)
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
   const navigate = useNavigate()
 
   const user = JSON.parse(localStorage.getItem('user'))
@@ -33,12 +36,13 @@ function Dashboard() {
     }
   }
 
-  const handleLogout = () => {
-    if (!window.confirm('Are you sure you want to LogOut?')) return
+  const handleLogout = () => setShowLogoutConfirm(true)
+  const confirmLogout = () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
+    onLogout(null)
     toast.success('Logged out successfully!')
-    navigate('/login')
+    navigate('/login', { replace: true })
   }
 
   const handleOpenAdd = () => {
@@ -72,11 +76,13 @@ function Dashboard() {
     }
   }
 
-  const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this job?')) return
+  const handleDelete = (id) => setDeleteId(id)
+
+  const confirmDelete = async () => {
     try {
-      await deleteJob(id)
+      await deleteJob(deleteId)
       toast.success('Job deleted!')
+      setDeleteId(null)
       fetchJobs()
     } catch (err) {
       toast.error('Something went wrong')
@@ -173,9 +179,13 @@ function Dashboard() {
         {/* Jobs List */}
         {loading ? (
           <p className="text-center text-gray-400">Loading...</p>
-        ) : jobs.length === 0 ? (
+        ) : filteredJobs.length === 0 && jobs.length === 0 ? (
           <p className="text-center text-gray-400 mt-8">
             No jobs added yet. Click "+ Add Job" to start!
+          </p>
+        ) : filteredJobs.length === 0 ? (
+          <p className="text-center text-gray-400 mt-8">
+            No jobs found for "<span className="font-medium text-indigo-400">{filterStatus}</span>" status.
           </p>
         ) : (
           <div className="flex flex-col gap-4">
@@ -198,6 +208,23 @@ function Dashboard() {
         onClose={handleClose}
         onSubmit={handleSubmit}
         editJob={editJob}
+      />
+      <ConfirmModal
+        isOpen={!!deleteId}
+        title="Delete Job?"
+        message="Are you sure you want to delete this job? This action cannot be undone."
+        onConfirm={confirmDelete}
+        onCancel={() => setDeleteId(null)}
+        confirmText="Delete"
+      />
+
+      <ConfirmModal
+        isOpen={showLogoutConfirm}
+        title="Logout?"
+        message="Are you sure you want to logout?"
+        onConfirm={confirmLogout}
+        onCancel={() => setShowLogoutConfirm(false)}
+        confirmText="Logout"
       />
 
     </div>

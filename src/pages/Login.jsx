@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { loginUser } from '../utils/api'
 import toast from 'react-hot-toast'
 
-function Login() {
+function Login({ onLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -19,6 +19,7 @@ function Login() {
       // console.log('responseeee',res)
       localStorage.setItem('token', res.data.token)
       localStorage.setItem('user', JSON.stringify(res.data.user))
+      onLogin(res.data.token)
       toast.success('Login successful!')
       navigate('/dashboard')
     } catch (err) {
