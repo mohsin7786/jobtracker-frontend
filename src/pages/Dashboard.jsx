@@ -27,6 +27,7 @@ function Dashboard() {
       setJobs(res.data)
     } catch (err) {
       console.error('Jobs fetch error:', err)
+      toast.error('Server is waking up, please wait...')
     } finally {
       setLoading(false)
     }
